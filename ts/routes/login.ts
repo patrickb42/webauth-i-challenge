@@ -1,5 +1,15 @@
-import * as Express from 'express';
+// import * as Express from 'express';
 
-export const router = Express.Router();
+// import { basicRESTCallTemplate } from './basicRESTCallTemplate';
 
-export default {};
+// export const router = Express.Router();
+
+// const post = (req: Express.Request, res: Express.Response) => {
+//   basicRESTCallTemplate({
+//     //
+//   });
+// };
+
+// router.post('/', post);
+
+// export default {};
