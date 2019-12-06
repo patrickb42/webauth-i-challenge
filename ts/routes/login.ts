@@ -1,15 +1,31 @@
-// import * as Express from 'express';
+import * as Express from 'express';
+import * as Bcrypt from 'bcryptjs';
 
-// import { basicRESTCallTemplate } from './basicRESTCallTemplate';
+import { UserCredentials } from '../data/models';
 
-// export const router = Express.Router();
+export const router = Express.Router();
 
-// const post = (req: Express.Request, res: Express.Response) => {
-//   basicRESTCallTemplate({
-//     //
-//   });
-// };
+const post = async (req: Express.Request, res: Express.Response) => {
+  const { username, password } = req.body;
 
-// router.post('/', post);
+  if (username === undefined || password === undefined) {
+    return (res.status(400).json({ message: 'must send username and password' }));
+  }
 
-// export default {};
+  try {
+    const result = await UserCredentials.getByUsername({ username });
+    return (Bcrypt.compareSync(password, result.hashed_password)
+      ? res.status(200).json({ userId: result.id })
+      : res.status(403).json({ message: 'You shall not pass!' })
+    );
+  } catch (error) {
+    return res.status(500).json({
+      error: 'error logging in',
+      message: error.message,
+    });
+  }
+};
+
+router.post('/', post);
+
+export default {};

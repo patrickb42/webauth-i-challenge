@@ -17,9 +17,9 @@ const post = (req: Express.Request, res: Express.Response) => {
 
   password = Bcrypt.hashSync(password, SALT_ROUNDS);
 
-  basicRESTCallTemplate({
+  return basicRESTCallTemplate({
     dbOperation: UserCredentials.insert,
-    dbOperationArg: { username, password },
+    dbOperationArg: { item: { username, password } },
     operationFailed: (result) => (result === undefined),
     operationFailureCode: 500,
     operationFailureObject: { message: 'error registering user' },

@@ -2,7 +2,7 @@ import * as Knex from 'knex';
 
 const makeUserCredentialsTable = async (knex: Knex) => (knex
   .schema.createTable('user_credentials', (tbl) => {
-    tbl.increments('user_id');
+    tbl.increments();
     tbl.string('username', 128)
       .unique()
       .notNullable();
