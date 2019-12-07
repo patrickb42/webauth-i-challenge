@@ -3,29 +3,30 @@ import * as Bcrypt from 'bcryptjs';
 
 import { SALT_ROUNDS } from '../globalConstants';
 import { UserCredentials } from '../data/models';
-import { basicRESTCallTemplate } from './basicRESTCallTemplate';
 
 export const router = Express.Router();
 
-const post = (req: Express.Request, res: Express.Response) => {
-  const { username } = req.body;
-  let { password } = req.body;
+const post = async (req: Express.Request, res: Express.Response) => {
+  const { username, password } = req.body;
 
   if (username === undefined || password === undefined) {
     return (res.status(400).json({ message: 'must send username and password' }));
   }
 
-  password = Bcrypt.hashSync(password, SALT_ROUNDS);
+  const hashedPassword = Bcrypt.hashSync(password, SALT_ROUNDS);
 
-  return basicRESTCallTemplate({
-    dbOperation: UserCredentials.insert,
-    dbOperationArg: { item: { username, password } },
-    operationFailed: (result) => (result === undefined),
-    operationFailureCode: 500,
-    operationFailureObject: { message: 'error registering user' },
-    opperationSuccessCode: 201,
-    operationErrorMessage: 'error registering user',
-  })(req, res);
+  try {
+    const result = await UserCredentials.insert({ item: { username, hashedPassword } });
+    return ((result === undefined)
+      ? res.status(500).json({ message: 'error registering user' })
+      : res.status(201).json(result)
+    );
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message,
+      message: 'error registering user',
+    });
+  }
 };
 
 router.post('/', post);
