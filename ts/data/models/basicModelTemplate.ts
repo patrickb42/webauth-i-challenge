@@ -1,7 +1,5 @@
 import db from '../dbConfig';
 
-import { UnknownShape } from './../../types';
-
 
 interface ModelTemplateArg<T> {
   tableName: string,
@@ -16,7 +14,7 @@ export const basicModelTemplate = <T>({
   preprocessData = (data) => data,
   processResult = (result) => result,
 }: ModelTemplateArg<T>) => {
-  const get = (getArg: T) => (db(tableName)
+  const get = (getArg: T = {} as T) => (db(tableName)
     .where(getArg)
     .then((data) => (data !== undefined ? data.map(processResult) : undefined))
   );
