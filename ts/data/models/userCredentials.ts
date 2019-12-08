@@ -19,7 +19,7 @@ interface GetByUsernameArg {
 }
 
 const getByUsername = ({ username }: GetByUsernameArg) => (db('user_credentials')
-  .where('username', username)
+  .where({ username })
   .first()
 );
 
