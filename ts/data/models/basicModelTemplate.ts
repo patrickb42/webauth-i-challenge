@@ -12,7 +12,6 @@ export const basicModelTemplate = <T>({
   preprocessData = (data) => data,
   processResult = (result) => result,
 }: ModelTemplateArg<T>) => {
-
   const get = (getArg: T | { id: number } = {} as T) => (db(tableName)
     .where(getArg)
     .then((data) => (data !== undefined ? data.map(processResult) : undefined))
