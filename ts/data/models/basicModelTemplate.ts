@@ -1,26 +1,26 @@
 import db from '../dbConfig';
 
 
-interface ModelTemplateArg {
+interface ModelTemplateArg<T> {
   tableName: string,
-  preprocessData?: (data) => any,
-  processResult?: (result) => any,
+  preprocessData?: (data: T) => any,
+  processResult?: (result) => T,
 }
 
 export const basicModelTemplate = <T>({
   tableName,
-  preprocessData = async (data) => data,
-  processResult = async (result) => result,
-}: ModelTemplateArg) => {
+  preprocessData = (data) => data,
+  processResult = (result) => result,
+}: ModelTemplateArg<T>) => {
   interface GetArg {
     id?: number;
   }
 
-  const get = ({ id }: GetArg = {}) => ((id === undefined)
+  const get = (getArg?: T | GetArg) => ((getArg === undefined)
     ? db(tableName)
       .then((data) => (data !== undefined ? data.map(processResult) : undefined))
     : db(tableName)
-      .where('id', id)
+      .where(getArg)
       .first()
       .then((data) => (data !== undefined ? processResult(data) : undefined))
   );
@@ -32,7 +32,7 @@ export const basicModelTemplate = <T>({
 
   const insert = ({ item }: InsertArg) => (db(tableName)
     .insert(preprocessData(item), 'id')
-    .then(([id]) => get({ id }))
+    .then(async ([id]) => get({ id }))
   );
 
 
@@ -44,7 +44,7 @@ export const basicModelTemplate = <T>({
   const update = ({ id, changes }: UpdateArg) => (db(tableName)
     .where('id', id)
     .update(preprocessData(changes))
-    .then((count) => (count > 0 ? get({ id }) : null))
+    .then(async (count) => (count > 0 ? get({ id }) : null))
   );
 
 

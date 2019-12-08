@@ -4,9 +4,9 @@ import { basicModelTemplate } from './basicModelTemplate';
 
 const model = basicModelTemplate<UserCredentials>({
   tableName: 'user_credentials',
-  preprocessData: ({ username, password }) => ({
+  preprocessData: ({ username, hashedPassword }) => ({
     username,
-    hashed_password: password,
+    hashed_password: hashedPassword,
   }),
   processResult: ({ id, username }) => ({
     id,
