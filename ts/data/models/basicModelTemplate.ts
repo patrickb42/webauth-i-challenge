@@ -1,18 +1,22 @@
 import db from '../dbConfig';
 
+import { UnknownShape } from './../../types';
+
 
 interface ModelTemplateArg<T> {
   tableName: string,
+  keyColumnName?: string,
   preprocessData?: (data: T) => any,
   processResult?: (result) => T,
 }
 
 export const basicModelTemplate = <T>({
   tableName,
+  keyColumnName = 'id',
   preprocessData = (data) => data,
   processResult = (result) => result,
 }: ModelTemplateArg<T>) => {
-  const get = (getArg: T | { id: number } = {} as T) => (db(tableName)
+  const get = (getArg: T) => (db(tableName)
     .where(getArg)
     .then((data) => (data !== undefined ? data.map(processResult) : undefined))
   );
@@ -23,20 +27,20 @@ export const basicModelTemplate = <T>({
   }
 
   const insert = ({ item }: InsertArg) => (db(tableName)
-    .insert(preprocessData(item), 'id')
-    .then(([id]) => get({ id }))
+    .insert(preprocessData(item), keyColumnName)
+    .then(([id]) => get({ [keyColumnName]: id } as T))
   );
 
 
   interface UpdateArg {
-    id: number,
+    keyValue: any,
     changes: T,
   }
 
-  const update = ({ id, changes }: UpdateArg) => (db(tableName)
-    .where('id', id)
+  const update = ({ keyValue, changes }: UpdateArg) => (db(tableName)
+    .where({ [keyColumnName]: keyValue })
     .update(preprocessData(changes))
-    .then((count) => (count > 0 ? get({ id }) : null))
+    .then((count) => (count > 0 ? get({ [keyColumnName]: keyValue } as T) : null))
   );
 
 

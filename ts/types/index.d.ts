@@ -3,3 +3,7 @@ export interface UserCredentials {
   username?: string,
   hashedPassword?: string,
 }
+
+export interface UnknownShape {
+  [key: string]: any,
+}
