@@ -2,7 +2,9 @@ import * as Express from 'express';
 import * as Bcrypt from 'bcryptjs';
 
 import { SALT_ROUNDS } from '../globalConstants';
+import { filterObject } from '../utils';
 import { UserCredentials } from '../data/models';
+import { verifyLoggedIn } from '../middleware';
 
 export const router = Express.Router();
 
@@ -39,10 +41,14 @@ const login = async (req: Express.Request, res: Express.Response) => {
 
   try {
     const result = await UserCredentials.getByUsername({ username });
-    return (Bcrypt.compareSync(password, result.hashed_password)
-      ? res.status(200).json({ id: result.id })
-      : res.status(403).json({ message: 'You shall not pass!' })
-    );
+    if (Bcrypt.compareSync(password, result.hashed_password)) {
+      req.session.user = filterObject({
+        sourceObject: result,
+        filter: { id: undefined, username },
+      });
+      return res.status(200).json({ id: result.id });
+    }
+    return res.status(403).json({ message: 'invalid credentials' });
   } catch (error) {
     return res.status(500).json({
       error: 'error logging in',
@@ -68,10 +74,20 @@ const getUsers = async (req: Express.Request, res: Express.Response) => {
 };
 
 
+const logout = (req: Express.Request, res: Express.Response) => (
+  (req.session)
+    ? req.session.destroy((err) => (
+      (err)
+        ? res.status(500).json({ message: 'unable to log you out' })
+        : res.status(200).json({ message: 'logout successful' })
+    ))
+    : res.status(200).json({ message: 'no user is logged in' })
+);
+
 
 router.post('/register', register);
 router.post('/login', login);
-router.get('/users', getUsers);
-// router.get('/logout', logout);
+router.get('/users', verifyLoggedIn, getUsers);
+router.get('/logout', logout);
 
 export default {};
