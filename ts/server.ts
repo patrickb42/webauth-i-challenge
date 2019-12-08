@@ -16,10 +16,4 @@ server.use('/api/login', loginRouter);
 server.use('/api/register', registerRouter);
 server.use('/api/users', usersRouter);
 
-const thing: any = {};
-
-console.log(thing.something !== 0);
-console.log(thing?.something?.hello);
-console.log(thing!.something! !== 0);
-
 export default server;
