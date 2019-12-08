@@ -7,11 +7,7 @@ import * as ConnectSessionKnex from 'connect-session-knex'; // required only for
 
 import { timeInMs } from './utils';
 import db from './data/dbConfig';
-import {
-  loginRouter,
-  registerRouter,
-  usersRouter,
-} from './routes';
+import { authRouter } from './routes';
 
 const server = Express();
 
@@ -40,8 +36,6 @@ server.use(Express.json());
 server.use(Cors());
 server.use(Session(sessionConfig)); // must come before any routes
 
-server.use('/api/login', loginRouter);
-server.use('/api/register', registerRouter);
-server.use('/api/users', usersRouter);
+server.use('/api/auth', authRouter);
 
 export default server;
