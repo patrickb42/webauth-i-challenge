@@ -14,9 +14,9 @@ const post = async (req: Express.Request, res: Express.Response) => {
 
   try {
     const result = await UserCredentials.getByUsername({ username });
-    return (!Bcrypt.compareSync(password, result.hashed_password)
-      ? res.status(403).json({ message: 'You shall not pass!' })
-      : res.status(200).json({ id: result.id })
+    return (Bcrypt.compareSync(password, result.hashed_password)
+      ? res.status(200).json({ id: result.id })
+      : res.status(403).json({ message: 'You shall not pass!' })
     );
   } catch (error) {
     return res.status(500).json({
