@@ -20,7 +20,7 @@ const register = async (req: Express.Request, res: Express.Response) => {
   try {
     const result = await UserCredentials.insert({ item: { username, hashedPassword } });
     return ((result)
-      ? res.status(201).json(result)
+      ? (req.session.user = result) && res.status(201).json(result)
       : res.status(500).json({ message: 'error registering user' })
     );
   } catch (err) {
@@ -75,7 +75,7 @@ const getUsers = async (req: Express.Request, res: Express.Response) => {
 
 
 const logout = (req: Express.Request, res: Express.Response) => (
-  (req.session.user)
+  (req.session?.user)
     ? req.session.destroy((err) => (
       (err)
         ? res.status(500).json({ message: 'unable to log you out' })
