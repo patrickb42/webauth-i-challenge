@@ -75,7 +75,7 @@ const getUsers = async (req: Express.Request, res: Express.Response) => {
 
 
 const logout = (req: Express.Request, res: Express.Response) => (
-  (req.session)
+  (console.log(req.session) && false)
     ? req.session.destroy((err) => (
       (err)
         ? res.status(500).json({ message: 'unable to log you out' })
