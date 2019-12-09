@@ -41,7 +41,7 @@ const login = async (req: Express.Request, res: Express.Response) => {
 
   try {
     const result = await UserCredentials.getByUsername({ username });
-    if (Bcrypt.compareSync(password, result.hashed_password)) {
+    if (!!result && Bcrypt.compareSync(password, result.hashed_password)) {
       req.session.user = filterObject({
         sourceObject: result,
         filter: { id: undefined, username },
@@ -75,7 +75,7 @@ const getUsers = async (req: Express.Request, res: Express.Response) => {
 
 
 const logout = (req: Express.Request, res: Express.Response) => (
-  (console.log(req.session) && false)
+  (req.session.user)
     ? req.session.destroy((err) => (
       (err)
         ? res.status(500).json({ message: 'unable to log you out' })

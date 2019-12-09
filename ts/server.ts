@@ -13,7 +13,7 @@ const server = Express();
 
 const KnexSessionStore = ConnectSessionKnex(Session); // *
 const sessionConfig: Session.SessionOptions = {
-  name: 'not sure what to put here',
+  name: 'example name',
   secret: process.env.SESSION_SECRET || 'development secret',
   cookie: {
     maxAge: timeInMs({ days: 120 }), // longest a cookie can be valid
@@ -21,7 +21,7 @@ const sessionConfig: Session.SessionOptions = {
     httpOnly: true, // if 'true' no scripts can view or modify the cookie
   },
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: false, // GDPR laws against setting automatically, but this can by dynamic?
   store: new KnexSessionStore({ // * everything in 'store' relates to data persistence
     knex: db,
     tablename: 'knex_sessions',
