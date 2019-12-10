@@ -18,7 +18,7 @@ const register = async (req: Express.Request, res: Express.Response) => {
   const hashedPassword = Bcrypt.hashSync(password, SALT_ROUNDS);
 
   try {
-    const result = await UserCredentials.insert({ item: { username, hashedPassword } });
+    const [result] = await UserCredentials.insert({ item: { username, hashedPassword } });
     if (result) {
       req.session.user = result;
       return res.status(201).json(result);
