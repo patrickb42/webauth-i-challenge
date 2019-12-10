@@ -19,10 +19,11 @@ const register = async (req: Express.Request, res: Express.Response) => {
 
   try {
     const result = await UserCredentials.insert({ item: { username, hashedPassword } });
-    return ((result)
-      ? (req.session.user = result) && res.status(201).json(result)
-      : res.status(500).json({ message: 'error registering user' })
-    );
+    if (result) {
+      req.session.user = result;
+      return res.status(201).json(result);
+    }
+    return res.status(500).json({ message: 'error registering user' });
   } catch (err) {
     return res.status(500).json({
       error: err.message,
